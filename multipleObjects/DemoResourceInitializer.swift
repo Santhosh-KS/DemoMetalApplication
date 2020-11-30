@@ -2,7 +2,7 @@ import MetalKit
 
 public enum DemoType {
   case basic, basicTriangle, basicTriangleWithColor, squareWithTwoTrianglesBasic
-  case squareWithTwoTrianglesIndicies, squareWithTwoTrianglesPerVertex
+  case squareWithTwoTrianglesIndicies, squareWithTwoTrianglesPerVertex, squareWithTwoTrianglesAnimate
 }
 
 class DemoResourceInitializer {
@@ -14,6 +14,7 @@ class DemoResourceInitializer {
   var vertexBuffer:MTLBuffer! = nil
   var indiciesBuffer:MTLBuffer! = nil
   var demo:DemoType = .basic
+  var constants = Constants()
   
   init(device: MTLDevice, demoType: DemoType = .basic) {
     demo = demoType
@@ -49,12 +50,15 @@ class DemoResourceInitializer {
      if demo != .basic {
       if demo == .basicTriangle {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_function", fFunc: "basic_fragment_function")
-
       } else if  demo == .basicTriangleWithColor || demo == .squareWithTwoTrianglesBasic  || demo == .squareWithTwoTrianglesIndicies {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_color_function")
-      }else {
-      /// if demo == .squareWithTwoTrianglesPerVertex {
+      } else if demo == .squareWithTwoTrianglesPerVertex {
+      /// if demo == .squareWithTwoTrianglesPerVertex || demo == .squareWithTwoTrianglesAnimate {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_per_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_per_vertex_color_function")
+        let vertexDescriptor = setupVertexDescriptor()
+        renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
+      } else if demo == .squareWithTwoTrianglesAnimate {
+        renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_per_vertex_triangle_with_color_and_animation_function", fFunc: "basic_fragment_triangle_with_per_vertex_colorand_animation_function")
         let vertexDescriptor = setupVertexDescriptor()
         renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
       }
@@ -86,7 +90,6 @@ class DemoResourceInitializer {
       verticiesCount = verticies.count
       vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
     } else if demo == .squareWithTwoTrianglesBasic {
-      //print("KSS I'm trying square")
       let verticies:[VertexWithColor] = [
         VertexWithColor(position: SIMD3<Float>(size,size,0), color:SIMD4<Float>(1,0,0,1)), // v0
         VertexWithColor(position: SIMD3<Float>(-size,size,0), color:SIMD4<Float>(0,1,0,1)), // v1
@@ -98,7 +101,7 @@ class DemoResourceInitializer {
       ]
       verticiesCount = verticies.count
       vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
-    } else if demo == .squareWithTwoTrianglesIndicies || demo == .squareWithTwoTrianglesPerVertex {
+    } else if demo == .squareWithTwoTrianglesIndicies || demo == .squareWithTwoTrianglesPerVertex || demo == .squareWithTwoTrianglesAnimate {
       let verticies:[VertexWithColor] = [
         VertexWithColor(position: SIMD3<Float>(size,size,0), color:SIMD4<Float>(1,0,0,1)), // v0
         VertexWithColor(position: SIMD3<Float>(-size,size,0), color:SIMD4<Float>(0,1,0,1)), // v1
@@ -137,12 +140,21 @@ class DemoResourceInitializer {
     commandEncoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
     
     if demo != .basic {
-       if demo != .squareWithTwoTrianglesIndicies {
+      if demo == .basicTriangle || demo == .basicTriangleWithColor || demo == .squareWithTwoTrianglesBasic {
         commandEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: verticiesCount)
-       } else {
-        //print("KSS Verticies count \(verticiesCount) : indicies count \(indiciesCount)")
+       } else if demo == .squareWithTwoTrianglesIndicies ||
+                  demo == .squareWithTwoTrianglesPerVertex ||
+                  demo == .squareWithTwoTrianglesAnimate {
+        
+        if demo == .squareWithTwoTrianglesAnimate {
+          let deltaTime = 1 / Float(view.preferredFramesPerSecond)
+          constants.animateBy += deltaTime
+          commandEncoder?.setVertexBytes(&constants, length: MemoryLayout<Constants>.stride, index: 1)
+        }
         commandEncoder?.drawIndexedPrimitives(type: .triangle, indexCount: indiciesCount, indexType: .uint16, indexBuffer: indiciesBuffer, indexBufferOffset: 0)
         /*commandEncoder?.drawIndexedPrimitives(type: .triangle, indexCount: indiciesCount, indexType: .uint16, indexBuffer: indiciesBuffer, indexBufferOffset: 0, instanceCount: 1)*/
+       } else {
+         print("Nothing to render!")
        }
     }
     commandEncoder?.endEncoding()

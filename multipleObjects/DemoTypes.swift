@@ -11,4 +11,7 @@ struct VertexWithColor {
   let color:SIMD4<Float>
 }
 
+struct Constants {
+  var animateBy:Float = 0.0
+}
 

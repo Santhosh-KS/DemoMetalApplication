@@ -68,3 +68,25 @@ vertex basicTrianglePerVertexWithColorOut basic_per_vertex_triangle_with_color_f
 fragment float4 basic_fragment_triangle_with_per_vertex_color_function(basicTrianglePerVertexWithColorOut vIn [[stage_in]]) {
   return vIn.color;
 }
+
+
+// Animation
+
+struct DemoConstants {
+  float animateBy{0.0};
+};
+
+vertex basicTrianglePerVertexWithColorOut basic_per_vertex_triangle_with_color_and_animation_function(basicTrianglePerVertexWithColorIn vertexIn [[ stage_in ]], constant DemoConstants &constants [[ buffer(1) ]]) {
+  
+  basicTrianglePerVertexWithColorOut vout;
+  vout.position = float4(vertexIn.position, 1);
+  vout.color = vertexIn.color;
+  vout.position.y += cos(constants.animateBy)*0.4;
+  vout.position.x += sin(constants.animateBy)*0.3;
+  
+  return vout;
+}
+
+fragment float4 basic_fragment_triangle_with_per_vertex_colorand_animation_function(basicTrianglePerVertexWithColorOut vIn [[stage_in]]) {
+  return vIn.color;
+}
