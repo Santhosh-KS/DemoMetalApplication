@@ -45,3 +45,26 @@ vertex basicTriangleVertexWithColorOut basic_vertex_triangle_with_color_function
 fragment float4 basic_fragment_triangle_with_color_function(basicTriangleVertexWithColorOut vIn [[stage_in]]) {
   return vIn.color;
 }
+
+// Per vertex based approach
+
+struct basicTrianglePerVertexWithColorIn {
+  float3 position [[attribute(0)]];
+  float4 color [[attribute(1)]];
+};
+
+struct basicTrianglePerVertexWithColorOut {
+  float4 position [[position]];
+  float4 color;
+};
+
+vertex basicTrianglePerVertexWithColorOut basic_per_vertex_triangle_with_color_function(basicTrianglePerVertexWithColorIn vertexIn [[ stage_in ]]) {
+  basicTrianglePerVertexWithColorOut vout;
+  vout.position = float4(vertexIn.position, 1);
+  vout.color = vertexIn.color;
+  return vout;
+}
+
+fragment float4 basic_fragment_triangle_with_per_vertex_color_function(basicTrianglePerVertexWithColorOut vIn [[stage_in]]) {
+  return vIn.color;
+}

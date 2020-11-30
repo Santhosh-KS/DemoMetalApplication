@@ -2,7 +2,7 @@ import MetalKit
 
 public enum DemoType {
   case basic, basicTriangle, basicTriangleWithColor, squareWithTwoTrianglesBasic
-  case squareWithTwoTrianglesIndicies
+  case squareWithTwoTrianglesIndicies, squareWithTwoTrianglesPerVertex
 }
 
 class DemoResourceInitializer {
@@ -23,6 +23,7 @@ class DemoResourceInitializer {
   }
   
   fileprivate func setupVertexDescriptor() -> MTLVertexDescriptor {
+    // Needed only for per-vertex based approach
     let vertexDescriptor = MTLVertexDescriptor()
     vertexDescriptor.attributes[0].bufferIndex = 0
     vertexDescriptor.attributes[0].format = .float3
@@ -32,7 +33,7 @@ class DemoResourceInitializer {
     vertexDescriptor.attributes[1].format = .float4
     vertexDescriptor.attributes[1].offset = MemoryLayout<SIMD3<Float>>.size
     
-    vertexDescriptor.layouts[0].stride = MemoryLayout<Vertex>.stride
+    vertexDescriptor.layouts[0].stride = MemoryLayout<VertexWithColor>.stride
     return vertexDescriptor
   }
   
@@ -48,17 +49,16 @@ class DemoResourceInitializer {
      if demo != .basic {
       if demo == .basicTriangle {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_function", fFunc: "basic_fragment_function")
-        let vertexDescriptor = setupVertexDescriptor()
-        renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
-      } else {
-        //if  demo == .basicTriangleWithColor || demo == .squareWithTwoTrianglesBasic  || demo == .squareWithTwoTrianglesIndicies {
+
+      } else if  demo == .basicTriangleWithColor || demo == .squareWithTwoTrianglesBasic  || demo == .squareWithTwoTrianglesIndicies {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_color_function")
+      }else {
+      /// if demo == .squareWithTwoTrianglesPerVertex {
+        renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_per_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_per_vertex_color_function")
         let vertexDescriptor = setupVertexDescriptor()
         renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
       }
-      
     }
-    
     do {
       renderPipelineState = try device.makeRenderPipelineState(descriptor: renderPipelineDescriptor )
     } catch let error as NSError {
@@ -98,7 +98,7 @@ class DemoResourceInitializer {
       ]
       verticiesCount = verticies.count
       vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
-    } else if demo == .squareWithTwoTrianglesIndicies {
+    } else if demo == .squareWithTwoTrianglesIndicies || demo == .squareWithTwoTrianglesPerVertex {
       let verticies:[VertexWithColor] = [
         VertexWithColor(position: SIMD3<Float>(size,size,0), color:SIMD4<Float>(1,0,0,1)), // v0
         VertexWithColor(position: SIMD3<Float>(-size,size,0), color:SIMD4<Float>(0,1,0,1)), // v1
