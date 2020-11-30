@@ -2,6 +2,7 @@ import MetalKit
 
 public enum DemoType {
   case basic, basicTriangle, basicTriangleWithColor, squareWithTwoTrianglesBasic
+  case squareWithTwoTrianglesIndicies
 }
 
 class DemoResourceInitializer {
@@ -9,7 +10,9 @@ class DemoResourceInitializer {
   var commandQueue:MTLCommandQueue! = nil
   var renderPipelineState: MTLRenderPipelineState! = nil
   var verticiesCount = 0
+  var indiciesCount = 0
   var vertexBuffer:MTLBuffer! = nil
+  var indiciesBuffer:MTLBuffer! = nil
   var demo:DemoType = .basic
   
   init(device: MTLDevice, demoType: DemoType = .basic) {
@@ -19,7 +22,7 @@ class DemoResourceInitializer {
     setupVerticies(device: device)
   }
   
-  func setupVertexDescriptor() -> MTLVertexDescriptor {
+  fileprivate func setupVertexDescriptor() -> MTLVertexDescriptor {
     let vertexDescriptor = MTLVertexDescriptor()
     vertexDescriptor.attributes[0].bufferIndex = 0
     vertexDescriptor.attributes[0].format = .float3
@@ -47,11 +50,8 @@ class DemoResourceInitializer {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_function", fFunc: "basic_fragment_function")
         let vertexDescriptor = setupVertexDescriptor()
         renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
-      } else if demo == .basicTriangleWithColor {
-        renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_color_function")
-        let vertexDescriptor = setupVertexDescriptor()
-        renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
-      } else if demo == .squareWithTwoTrianglesBasic {
+      } else {
+        //if  demo == .basicTriangleWithColor || demo == .squareWithTwoTrianglesBasic  || demo == .squareWithTwoTrianglesIndicies {
         renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_color_function")
         let vertexDescriptor = setupVertexDescriptor()
         renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
@@ -86,7 +86,7 @@ class DemoResourceInitializer {
       verticiesCount = verticies.count
       vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
     } else if demo == .squareWithTwoTrianglesBasic {
-      print("KSS I'm trying square")
+      //print("KSS I'm trying square")
       let verticies:[VertexWithColor] = [
         VertexWithColor(position: SIMD3<Float>(size,size,0), color:SIMD4<Float>(1,0,0,1)), // v0
         VertexWithColor(position: SIMD3<Float>(-size,size,0), color:SIMD4<Float>(0,1,0,1)), // v1
@@ -98,8 +98,20 @@ class DemoResourceInitializer {
       ]
       verticiesCount = verticies.count
       vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
+    } else if demo == .squareWithTwoTrianglesIndicies {
+      let verticies:[VertexWithColor] = [
+        VertexWithColor(position: SIMD3<Float>(size,size,0), color:SIMD4<Float>(1,0,0,1)), // v0
+        VertexWithColor(position: SIMD3<Float>(-size,size,0), color:SIMD4<Float>(0,1,0,1)), // v1
+        VertexWithColor(position: SIMD3<Float>(-size,-size,0), color:SIMD4<Float>(0,0,1,1)), // v2
+        VertexWithColor(position: SIMD3<Float>(size,-size,0), color:SIMD4<Float>(1,0,1,1)), // v3
+      ]
+      let indicies:[UInt16] = [ 0, 1, 2,
+                                0, 2, 3]
+      indiciesCount = indicies.count
+      verticiesCount = verticies.count
+      vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticiesCount, options: [])
+      indiciesBuffer = device.makeBuffer(bytes: indicies, length: MemoryLayout<UInt16>.stride*indiciesCount, options: [])
     }
-    
   }
   
    func setupRenderDescriptor(device: MTLDevice, vFunc vf:String, fFunc ff:String) -> MTLRenderPipelineDescriptor  {
@@ -123,9 +135,15 @@ class DemoResourceInitializer {
     let commandEncoder = commandBuffer?.makeRenderCommandEncoder(descriptor: renderPassDescriptor)
     commandEncoder?.setRenderPipelineState(renderPipelineState)
     commandEncoder?.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-    print("KSS Verticies count \(verticiesCount)")
+    
     if demo != .basic {
-      commandEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: verticiesCount)
+       if demo != .squareWithTwoTrianglesIndicies {
+        commandEncoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: verticiesCount)
+       } else {
+        //print("KSS Verticies count \(verticiesCount) : indicies count \(indiciesCount)")
+        commandEncoder?.drawIndexedPrimitives(type: .triangle, indexCount: indiciesCount, indexType: .uint16, indexBuffer: indiciesBuffer, indexBufferOffset: 0)
+        /*commandEncoder?.drawIndexedPrimitives(type: .triangle, indexCount: indiciesCount, indexType: .uint16, indexBuffer: indiciesBuffer, indexBufferOffset: 0, instanceCount: 1)*/
+       }
     }
     commandEncoder?.endEncoding()
     commandBuffer?.present(drawable)
