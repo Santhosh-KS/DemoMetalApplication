@@ -14,6 +14,8 @@
 		2C8DC36D2574385C00F3A681 /* DemoRenderrer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8DC36C2574385C00F3A681 /* DemoRenderrer.swift */; };
 		2C8DC3712574485700F3A681 /* DemoMetalFile.metal in Sources */ = {isa = PBXBuildFile; fileRef = 2C8DC3702574485700F3A681 /* DemoMetalFile.metal */; };
 		2C8DC37525744F9900F3A681 /* DemoResourceInitializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C8DC37425744F9900F3A681 /* DemoResourceInitializer.swift */; };
+		2CCCE4722574D4470042F64E /* DemoTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CCCE4712574D4470042F64E /* DemoTypes.swift */; };
+		2CCCE476257501040042F64E /* Reademe.md in Resources */ = {isa = PBXBuildFile; fileRef = 2CCCE475257501040042F64E /* Reademe.md */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +29,8 @@
 		2C8DC36C2574385C00F3A681 /* DemoRenderrer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoRenderrer.swift; sourceTree = "<group>"; };
 		2C8DC3702574485700F3A681 /* DemoMetalFile.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = DemoMetalFile.metal; sourceTree = "<group>"; };
 		2C8DC37425744F9900F3A681 /* DemoResourceInitializer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoResourceInitializer.swift; sourceTree = "<group>"; };
+		2CCCE4712574D4470042F64E /* DemoTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoTypes.swift; sourceTree = "<group>"; };
+		2CCCE475257501040042F64E /* Reademe.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Reademe.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,6 +72,8 @@
 				2C8DC36C2574385C00F3A681 /* DemoRenderrer.swift */,
 				2C8DC3702574485700F3A681 /* DemoMetalFile.metal */,
 				2C8DC37425744F9900F3A681 /* DemoResourceInitializer.swift */,
+				2CCCE4712574D4470042F64E /* DemoTypes.swift */,
+				2CCCE475257501040042F64E /* Reademe.md */,
 			);
 			path = multipleObjects;
 			sourceTree = "<group>";
@@ -129,6 +135,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CCCE476257501040042F64E /* Reademe.md in Resources */,
 				2C8DC35C2574169800F3A681 /* Assets.xcassets in Resources */,
 				2C8DC35F2574169800F3A681 /* Main.storyboard in Resources */,
 			);
@@ -143,6 +150,7 @@
 			files = (
 				2C8DC37525744F9900F3A681 /* DemoResourceInitializer.swift in Sources */,
 				2C8DC3712574485700F3A681 /* DemoMetalFile.metal in Sources */,
+				2CCCE4722574D4470042F64E /* DemoTypes.swift in Sources */,
 				2C8DC3582574169700F3A681 /* AppDelegate.swift in Sources */,
 				2C8DC36D2574385C00F3A681 /* DemoRenderrer.swift in Sources */,
 				2C8DC36A2574377E00F3A681 /* DemoView.swift in Sources */,
