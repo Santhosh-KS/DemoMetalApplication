@@ -29,9 +29,16 @@ class DemoResourceInitializer {
     var renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_function", fFunc: "basic_fragment_function")
     
      if demo != .basic {
-      renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_function", fFunc: "basic_fragment_function")
-      let vertexDescriptor = setupVertexDescriptor()
-      renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
+      if demo == .basicTriangle {
+        renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_function", fFunc: "basic_fragment_function")
+        let vertexDescriptor = setupVertexDescriptor()
+        renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
+      } else if demo == .basicTriangleWithColor {
+        renderPipelineDescriptor = setupRenderDescriptor(device:device , vFunc: "basic_vertex_triangle_with_color_function", fFunc: "basic_fragment_triangle_with_color_function")
+        let vertexDescriptor = setupVertexDescriptor()
+        renderPipelineDescriptor.vertexDescriptor = vertexDescriptor
+      }
+      
     }
     
     do {
@@ -59,7 +66,7 @@ class DemoResourceInitializer {
         VertexWithColor(position: SIMD3<Float>(size,-size,0), color: SIMD4<Float>(0,0,1,1)), // v2
       ]
       verticiesCount = verticies.count
-      vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<Vertex>.stride*verticies.count, options: [])
+      vertexBuffer = device.makeBuffer(bytes: verticies, length: MemoryLayout<VertexWithColor>.stride*verticies.count, options: [])
     }
     
   }

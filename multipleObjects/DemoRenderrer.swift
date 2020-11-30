@@ -6,7 +6,7 @@ class DemoRenderrer: NSObject {
   
   init(device: MTLDevice) {
     super.init()
-    self.resourceInitializer = DemoResourceInitializer(device: device, demoType: DemoType.basicTriangle)
+    self.resourceInitializer = DemoResourceInitializer(device: device, demoType: DemoType.basicTriangleWithColor)
   }
 }
 extension DemoRenderrer: MTKViewDelegate {
